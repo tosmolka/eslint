@@ -785,6 +785,38 @@ describe("cli", () => {
         });
     });
 
+    describe("when given the max-fatal-errors flag", () => {
+        it("should exit with exit code 1 if fatal error count under threshold", async () => {
+            const filePath = getFixturePath("max-fatal-errors");
+            const exitCode = await cli.execute(`--no-ignore --max-fatal-errors 10 ${filePath}`);
+
+            assert.strictEqual(exitCode, 1);
+        });
+
+        it("should exit with exit code 3 if fatal errors count exceeds threshold", async () => {
+            const filePath = getFixturePath("max-fatal-errors");
+            const exitCode = await cli.execute(`--no-ignore --max-fatal-errors 0 ${filePath}`);
+
+            assert.strictEqual(exitCode, 3);
+            assert.ok(log.error.calledOnce);
+            assert.include(log.error.getCall(0).args[0], "ESLint found too many fatal parsing errors");
+        });
+
+        it("should exit with exit code 1 if fatal error count equals threshold", async () => {
+            const filePath = getFixturePath("max-fatal-errors");
+            const exitCode = await cli.execute(`--no-ignore --max-warnings 1 ${filePath}`);
+
+            assert.strictEqual(exitCode, 1);
+        });
+
+        it("should exit with exit code 1 if flag is not specified and there are fatal errors", async () => {
+            const filePath = getFixturePath("max-fatal-errors");
+            const exitCode = await cli.execute(filePath);
+
+            assert.strictEqual(exitCode, 1);
+        });
+    });
+
     describe("when passed --no-inline-config", () => {
         let localCLI;
 

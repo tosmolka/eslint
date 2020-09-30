@@ -61,6 +61,7 @@ Using stdin:
 Handling warnings:
   --quiet                        Report errors only - default: false
   --max-warnings Int             Number of warnings to trigger nonzero exit code - default: -1
+  --max-fatal-errors Int         Number of fatal errors to trigger exit code 3 - default: -1
 
 Output:
   -o, --output-file path::String  Specify file to write report to
@@ -318,6 +319,26 @@ Normally, if ESLint runs and finds no errors (only warnings), it will exit with 
 Example:
 
     eslint --max-warnings 10 file.js
+
+#### `--max-fatal-errors`
+
+This option allows you to specify a fatal error threshold, which can be used to force ESLint to exit with an error code 3 if there are too many errors in your
+project that are considered fatal.
+
+Normally, ESLint treats fatal and non-fatal errors in the same way and exits with error code 1 if there is at least one. Error code 1 code indicates that linting
+was successful but fatal errors are often parsing errors that effectively prevented the linting. Many are caused by misconfigurations and fixable. This threshold
+enables ESLint to explicitly warn user with error message and different exit code.
+
+Example:
+
+    eslint --max-fatal-errors 0 file.js
+
+    file.js
+      1:1  error  Parsing error: The keyword 'import' is reserved
+
+    ✖ 1 problem (1 error, 0 warnings)
+
+    ESLint found too many fatal parsing errors (maximum: 0).
 
 ### Output
 
